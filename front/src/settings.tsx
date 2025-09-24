@@ -14,7 +14,8 @@ import { User, Bell, Shield, Palette, Globe, Save, Camera, Mail, Calendar, X } f
 
 interface SettingsProps {
   userRole: string
-  onClose: () => void // 추가
+  onClose: () => void
+  currentUser?: any
 }
 
 export default function Settings({ userRole, onClose }: SettingsProps) {
