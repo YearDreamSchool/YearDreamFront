@@ -1,24 +1,26 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card"
 import { Button } from "components/ui/button"
 import { Input } from "components/ui/input"
 import { Label } from "components/ui/label"
 import { Switch } from "components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select"
-import { Textarea } from "components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar"
 import { Badge } from "components/ui/badge"
 import { User, Bell, Shield, Palette, Globe, Save, Camera, Mail, Calendar, X } from "lucide-react"
+import { getCurrentUser, updateUser, getUserInfo } from "services/UserService"
 
 interface SettingsProps {
   userRole: string
-  onClose: () => void // 추가
+  onClose: () => void
+  currentUser?: any
 }
 
-export default function Settings({ userRole, onClose }: SettingsProps) {
+export default function Settings({ userRole, onClose, currentUser }: SettingsProps) {
   const [activeTab, setActiveTab] = useState("profile")
+  const [loading, setLoading] = useState(true)
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
@@ -28,14 +30,50 @@ export default function Settings({ userRole, onClose }: SettingsProps) {
   })
 
   const [profile, setProfile] = useState({
-    name: "김코치",
-    email: "coach.kim@eardream.com",
-    phone: "010-1234-5678",
-    position: "프론트엔드 코치",
-    department: "개발팀",
-    joinDate: "2023-03-15",
-    bio: "웹 개발 전문가로 5년간 현업에서 근무했습니다. 학생들과 함께 성장하는 것을 좋아합니다.",
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
   })
+
+  const roleMap: Record<string, string> = {
+    ROLE_USER: "교육생",
+    ROLE_COACH: "코치",
+    ROLE_ADMIN: "관리자",
+  };
+
+  useEffect(() => {
+  const fetchProfile = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) return
+
+    try {
+      const currentUser = await getCurrentUser(token);
+      if (!currentUser?.username) return;
+
+      const data = await getUserInfo(currentUser.username, token);
+      console.log("유저 정보:", data);
+      console.log(data);
+      if (data) {
+        setProfile({
+          name: data.name ?? "",
+          email: data.email ?? "",
+          phone: data.phone ?? "",
+          role: roleMap[data.role] ?? data.role ?? "",
+        });
+      }
+    } catch (err) {
+      console.error("유저 정보 가져오기 실패:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchProfile()
+}, [])
+
+
+  if (loading) return <div className="p-8">불러오는 중...</div>
 
   const settingsTabs = [
     { id: "profile", label: "프로필", icon: User },
@@ -45,9 +83,35 @@ export default function Settings({ userRole, onClose }: SettingsProps) {
     { id: "system", label: "시스템", icon: Globe },
   ]
 
-  const handleSave = () => {
-    alert("설정이 저장되었습니다!")
+  const handleSave = async () => {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    alert("로그인 정보가 없습니다.")
+    return
   }
+
+  try {
+    const currentUserData = await getCurrentUser(token)
+    if (!currentUserData?.username) {
+      alert("사용자 정보를 찾을 수 없습니다.")
+      return
+    }
+
+    const updated = await updateUser(currentUserData.username, profile, token)
+    if (updated) {
+      alert("프로필이 성공적으로 수정되었습니다!")
+      setProfile(updated)
+      onClose()
+      window.location.reload()
+    } else {
+      alert("프로필 수정에 실패했습니다.")
+    }
+  } catch (err) {
+    console.error("프로필 저장 실패:", err)
+    alert("오류가 발생했습니다.")
+  }
+}
+
 
   const renderProfileSettings = () => (
     <div className="space-y-6">
@@ -75,9 +139,11 @@ export default function Settings({ userRole, onClose }: SettingsProps) {
             </div>
             <div>
               <h3 className="text-xl font-bold text-neutral-900">{profile.name}</h3>
-              <p className="text-neutral-600">{profile.position}</p>
+              <p className="text-neutral-600">
+                {roleMap[profile.role] ?? profile.role}
+              </p>
               <Badge variant="outline" className="mt-2">
-                {userRole === "admin" ? "관리자" : userRole === "coach" ? "코치" : "수강생"}
+                {roleMap[currentUser?.role || "ROLE_USER"]}
               </Badge>
             </div>
           </div>
@@ -112,25 +178,21 @@ export default function Settings({ userRole, onClose }: SettingsProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="position">직책</Label>
-              <Input
-                id="position"
-                value={profile.position}
-                onChange={(e) => setProfile({ ...profile, position: e.target.value })}
-                className="rounded-xl"
-              />
+              <Label htmlFor="position">역할</Label>
+              <Select
+                value={profile.role}
+                onValueChange={(value) => setProfile({ ...profile, role: value })}
+              >
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue placeholder="역할 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ROLE_USER">{roleMap["ROLE_USER"]}</SelectItem>
+                  <SelectItem value="ROLE_COACH">{roleMap["ROLE_COACH"]}</SelectItem>
+                  <SelectItem value="ROLE_ADMIN">{roleMap["ROLE_ADMIN"]}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bio">자기소개</Label>
-            <Textarea
-              id="bio"
-              value={profile.bio}
-              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-              className="rounded-xl"
-              rows={4}
-            />
           </div>
         </CardContent>
       </Card>
