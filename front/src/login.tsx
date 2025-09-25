@@ -3,11 +3,8 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card"
 import { Button } from "components/ui/button"
-import { Input } from "components/ui/input"
-import { Label } from "components/ui/label"
-import { Checkbox } from "components/ui/checkbox"
-import { Eye, EyeOff, Mail, Lock, User, Shield, BookOpen, ArrowRight } from "lucide-react"
-import SocialLoginButtons from "components/SocialLoginButtons"
+import { User, Shield, BookOpen, ArrowRight } from "lucide-react"
+import SocialLoginButtons from "components/page/SocialLoginButtons"
 
 interface LoginProps {
   onLogin: (userRole: string, userData: any) => void
@@ -15,7 +12,6 @@ interface LoginProps {
 
 export default function Login({ onLogin }: LoginProps) {
   const [isLogin, setIsLogin] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
@@ -31,38 +27,11 @@ export default function Login({ onLogin }: LoginProps) {
     { email: "student@yeardream.com", password: "student123", role: "student", name: "이수강생", seat: "A-01" },
   ]
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    setTimeout(() => {
-      if (isLogin) {
-        const account = demoAccounts.find(acc => acc.email === formData.email && acc.password === formData.password)
-        if (account) {
-          onLogin(account.role, account)
-          window.location.href = "/"
-        } else {
-          alert("이메일 또는 비밀번호가 올바르지 않습니다.")
-        }
-      } else {
-        if (formData.password !== formData.confirmPassword) {
-          alert("비밀번호가 일치하지 않습니다.")
-          setLoading(false)
-          return
-        }
-        alert("회원가입이 완료되었습니다! 로그인해주세요.")
-        setIsLogin(true)
-        setFormData({ ...formData, password: "", confirmPassword: "" })
-      }
-      setLoading(false)
-    }, 1500)
-  }
-
   const handleDemoLogin = (account: any) => {
     setFormData({ ...formData, email: account.email, password: account.password })
     setTimeout(() => {
       onLogin(account.role, account)
-      window.location.href = "/" // 브라우저 리디렉션
+      window.location.href = "/"
     }, 500)
   }
 
@@ -134,55 +103,6 @@ export default function Login({ onLogin }: LoginProps) {
                   </div>
                 </div>
               )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {!isLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="name">이름</Label>
-                    <Input id="name" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="이름" className="rounded-xl h-12" required />
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">이메일</Label>
-                  <Input id="email" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="이메일" className="rounded-xl h-12" required />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">비밀번호</Label>
-                  <Input id="password" type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} placeholder="비밀번호" className="rounded-xl h-12" required />
-                  <Button type="button" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff /> : <Eye />}
-                  </Button>
-                </div>
-
-                {!isLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">비밀번호 확인</Label>
-                    <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} placeholder="비밀번호 확인" className="rounded-xl h-12" required />
-                  </div>
-                )}
-
-                {isLogin && (
-                  <div className="flex items-center justify-between">
-                    <Checkbox id="remember" checked={formData.rememberMe} onCheckedChange={checked => setFormData({ ...formData, rememberMe: checked as boolean })} />
-                    <Label htmlFor="remember">로그인 상태 유지</Label>
-                  </div>
-                )}
-
-                <Button type="submit" className="w-full h-12 rounded-xl bg-neutral-900 text-white font-semibold">
-                  {loading ? "처리 중..." : isLogin ? "로그인" : "회원가입"}
-                </Button>
-              </form>
-
-              <div className="text-center">
-                <p>
-                  {isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}
-                  <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-                    {isLogin ? "회원가입" : "로그인"}
-                  </Button>
-                </p>
-              </div>
             </CardContent>
           </Card>
         </div>

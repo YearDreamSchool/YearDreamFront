@@ -13,7 +13,7 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void
   filteredMenuItems: any[]
   currentUser: any
-  userRole: "admin" | "coach" | "student"
+  userRole: "admin" | "coach" | "user"
   handleLogout: () => void
   setShowSearch: (open: boolean) => void
 }
@@ -83,8 +83,9 @@ export default function Sidebar({
                     : "bg-system-green/10 text-system-green"
                 }`}
               >
-                {userRole === "admin" ? "Admin" : userRole === "coach" ? "Coach" : "Student"}
+                {userRole === "admin" ? "관리자" : userRole === "coach" ? "코치" : "수강생"}
               </Badge>
+
               <p className="text-xs text-neutral-500">{currentUser?.department || currentUser?.seat || ""}</p>
             </div>
           </div>
