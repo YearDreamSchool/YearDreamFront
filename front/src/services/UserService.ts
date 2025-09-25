@@ -81,7 +81,7 @@ export async function updateUser(
   token: string
 ): Promise<UserResponse | null> {
   try {
-    const res = await axios.post<UserResponse>(
+    const res = await axios.patch<UserResponse>(
       `http://localhost:8080/api/users/${username}`,
       updateData,
       {
