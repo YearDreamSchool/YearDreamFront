@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Calendar, MessageCircle, Users, BookOpen, BarChart3 } from "lucide-react"
-import { getCurrentUser, refreshAccessToken, getUserInfo } from "services/UserService"
+import { getCurrentUser, refreshAccessToken, getUserInfo, logoutUser } from "services/UserService"
 import AttendanceCheck from "attendance-check"
 import Dashboard from "dashboard"
 import Board from "board"
@@ -17,6 +17,7 @@ import Login from "login"
 import Sidebar from "components/page/Sidebar"
 import Header from "components/page/Header"
 import MainContent from "components/page/MainContent"
+import Cookies from "js-cookie";
 
 
 export default function Page() {
@@ -40,15 +41,28 @@ export default function Page() {
     console.log("로그인 완료:", userData, role)
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token")
-    setIsAuthenticated(false)
-    setCurrentUser(null)
-    setActiveTab("dashboard")
-    console.log("로그아웃 완료")
-  }
+  const handleLogout = async () => {
+    try {
+      const accessToken = localStorage.getItem("token");
+      if (!accessToken) throw new Error("엑세스 토큰이 없습니다.");
 
-// ... useEffect 내부
+      // 서버에 로그아웃 요청 (쿠키 자동 포함)
+      await logoutUser(accessToken);
+
+      // 프론트 상태 초기화
+      localStorage.removeItem("token");
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      setActiveTab("dashboard");
+
+      console.log("로그아웃 완료");
+    } catch (err) {
+      console.error("로그아웃 실패:", err);
+    }
+  };
+
+
+// useEffect 내부
 useEffect(() => {
   const fetchUser = async () => {
     const params = new URLSearchParams(window.location.search)

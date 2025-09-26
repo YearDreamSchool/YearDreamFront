@@ -16,6 +16,10 @@ export interface UpdateUserRequest {
   phone?: string
 }
 
+export interface LogoutUser {
+  token?: string
+}
+
 /**
  * 현재 로그인 사용자 정보 요청
  */
@@ -98,3 +102,19 @@ export async function updateUser(
     return null
   }
 }
+
+  /**
+   * 사용자 로그아웃 하기
+   */
+export const logoutUser = async (accessToken: string) => {
+  return axios.post(
+    "http://localhost:8080/api/users/logout",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    }
+  );
+};
