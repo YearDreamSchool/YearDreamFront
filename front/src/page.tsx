@@ -17,7 +17,6 @@ import Login from "login"
 import Sidebar from "components/page/Sidebar"
 import Header from "components/page/Header"
 import MainContent from "components/page/MainContent"
-import Cookies from "js-cookie";
 
 
 export default function Page() {
@@ -38,7 +37,6 @@ export default function Page() {
     setActiveTab(role === "user" ? "main" : "dashboard")
 
     if (token) localStorage.setItem("token", token)
-    console.log("로그인 완료:", userData, role)
   }
 
   const handleLogout = async () => {
@@ -144,17 +142,15 @@ useEffect(() => {
   fetchUser()
 }, [])
 
-
-
   if (!isAuthenticated) return <Login onLogin={handleLogin} />
 
   const menuItems = [
-    { id: "main", label: "Home", icon: BarChart3, roles: ["coach", "admin", "user"] },
-    { id: "dashboard", label: "Overview", icon: BarChart3, roles: ["coach", "admin"] },
-    { id: "attendance", label: "Attendance", icon: Users, roles: ["coach"] },
-    { id: "board", label: "Community", icon: MessageCircle, roles: ["coach", "admin", "user"] },
-    { id: "curriculum", label: "Learning", icon: BookOpen, roles: ["coach", "admin", "user"] },
-    { id: "calendar", label: "Schedule", icon: Calendar, roles: ["coach", "admin", "user"] },
+    { id: "main", label: "메인페이지", icon: BarChart3, roles: ["coach", "admin", "user"] },
+    { id: "dashboard", label: "대시보드", icon: BarChart3, roles: ["coach", "admin"] },
+    { id: "attendance", label: "좌석 배치도", icon: Users, roles: ["coach"] },
+    { id: "board", label: "게시판", icon: MessageCircle, roles: ["coach", "admin", "user"] },
+    { id: "curriculum", label: "커리큘럼", icon: BookOpen, roles: ["coach", "admin", "user"] },
+    { id: "calendar", label: "스케쥴", icon: Calendar, roles: ["coach", "admin", "user"] },
   ]
 
   const filteredMenuItems = menuItems.filter((item) => item.roles.includes(userRole))
@@ -163,7 +159,7 @@ useEffect(() => {
     switch (activeTab) {
       case "main": return <MainPage userRole={userRole} currentUser={currentUser} onNavigate={setActiveTab} />
       case "dashboard": return <Dashboard userRole={userRole} />
-      case "attendance": return <AttendanceCheck />
+      case "attendance": return <AttendanceCheck currentUser={currentUser}/>
       case "board": return <Board userRole={userRole} />
       case "curriculum": return <Curriculum />
       case "calendar": return <CalendarView userRole={userRole} />
