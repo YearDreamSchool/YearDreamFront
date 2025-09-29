@@ -34,7 +34,7 @@ export default function Page() {
     setCurrentUser(userData)
     setUserRole(role)
     setIsAuthenticated(true)
-    setActiveTab(role === "user" ? "main" : "dashboard")
+    setActiveTab("main")
 
     if (token) localStorage.setItem("token", token)
   }
@@ -146,7 +146,7 @@ useEffect(() => {
 
   const menuItems = [
     { id: "main", label: "메인페이지", icon: BarChart3, roles: ["coach", "admin", "user"] },
-    { id: "dashboard", label: "대시보드", icon: BarChart3, roles: ["coach", "admin"] },
+    // { id: "dashboard", label: "대시보드", icon: BarChart3, roles: ["coach", "admin"] },
     { id: "attendance", label: "좌석 배치도", icon: Users, roles: ["coach"] },
     { id: "board", label: "게시판", icon: MessageCircle, roles: ["coach", "admin", "user"] },
     { id: "curriculum", label: "커리큘럼", icon: BookOpen, roles: ["coach", "admin", "user"] },
@@ -155,11 +155,12 @@ useEffect(() => {
 
   const filteredMenuItems = menuItems.filter((item) => item.roles.includes(userRole))
 
+  const token = localStorage.getItem("token")
   const renderContent = () => {
     switch (activeTab) {
       case "main": return <MainPage userRole={userRole} currentUser={currentUser} onNavigate={setActiveTab} />
       case "dashboard": return <Dashboard userRole={userRole} />
-      case "attendance": return <AttendanceCheck currentUser={currentUser}/>
+      case "attendance": return <AttendanceCheck userToken={token}/>
       case "board": return <Board userRole={userRole} />
       case "curriculum": return <Curriculum />
       case "calendar": return <CalendarView userRole={userRole} />

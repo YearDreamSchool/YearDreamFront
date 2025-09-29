@@ -1,7 +1,7 @@
 import axios from "axios"
 
 /**
- * 학생 전체 조화
+ * 학생 전체 조회
  */
 export async function getAllStudents(token: string) {
     try {

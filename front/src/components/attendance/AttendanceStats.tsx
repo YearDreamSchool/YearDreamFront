@@ -2,11 +2,12 @@
 
 import { Card, CardContent } from "components/ui/card"
 
+type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE"
+
 interface Student {
-  seat: string
+  seat: number
   name: string
-  status: "present" | "absent" | "late"
-  time: string
+  status: AttendanceStatus
 }
 
 interface AttendanceStatsProps {
@@ -15,9 +16,9 @@ interface AttendanceStatsProps {
 
 export default function AttendanceStats({ data }: AttendanceStatsProps) {
   const total = data.length
-  const presentCount = data.filter((s) => s.status === "present").length
-  const lateCount = data.filter((s) => s.status === "late").length
-  const absentCount = data.filter((s) => s.status === "absent").length
+  const presentCount = data.filter((s) => s.status === "PRESENT").length
+  const lateCount = data.filter((s) => s.status === "LATE").length
+  const absentCount = data.filter((s) => s.status === "ABSENT").length
   const rate = total > 0 ? Math.round((presentCount / total) * 100) : 0
 
   return (

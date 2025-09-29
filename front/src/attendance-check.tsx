@@ -6,26 +6,18 @@ import AttendanceSearch from "components/attendance/AttendanceSearch"
 import AttendanceGrid from "components/attendance/AttendanceGrid"
 import AttendanceStats from "components/attendance/AttendanceStats"
 import { students } from "data/students"
-import { getAllStudents } from "./services/StudentService"
+import { getAllStudents } from "services/StudentService"
+import { Student } from "types/attendance"
 
-type AttendanceStatus = "present" | "absent" | "late"
-
-export type Student = {
-  seat: string;
-  name: string;
-  status: AttendanceStatus;
-  time: string;
-};
-
-export default function AttendanceCheck({ currentUser }: { currentUser: any }) {
+export default function AttendanceCheck({ userToken }: { userToken: any }) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [attendanceData, setAttendanceData] = useState<Student[]>(students)
+  const [attendanceData, setAttendanceData] = useState<Student[]>([])
 
   const saveAttendance = () => alert("Attendance saved successfully!")
 
   const resetAttendance = () => {
     if (window.confirm("Reset all attendance data?")) {
-      setAttendanceData(students.map((s) => ({ ...s, status: "absent", time: "-" })))
+      setAttendanceData(students.map((s) => ({ ...s, status: "ABSENT"})))
     }
   }
 
@@ -37,10 +29,11 @@ export default function AttendanceCheck({ currentUser }: { currentUser: any }) {
     const data = await getAllStudents(token) 
     if (data) {
       // 서버 데이터 -> Student 타입으로 변환
-      const formatted: Student[] = data.map((s: any) => ({
-        seat: s.seatNum.toString().padStart(2, "0"),
-        name: s.name,
-        status: s.status ?? "absent"
+      const formatted: Student[] = data.map((s: any, index:any) => ({
+        seat: s.seatNum ?? index + 1, 
+        name: s.name ?? `Student ${index + 1}`,
+        status: s.status ?? "ABSENT",
+        updatedAt: s.updatedAt ?? null
       }))
       setAttendanceData(formatted)
     }

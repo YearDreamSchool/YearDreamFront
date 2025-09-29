@@ -3,8 +3,12 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card"
 import { Button } from "components/ui/button"
-import { User, Shield, BookOpen, ArrowRight } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import SocialLoginButtons from "components/page/SocialLoginButtons"
+import { Label } from "components/ui/label" 
+import { Input } from "components/ui/input" 
+import { Checkbox } from "components/ui/checkbox" 
+import SignUpForm from "components/page/SignUpForm"
 
 interface LoginProps {
   onLogin: (userRole: string, userData: any) => void
@@ -21,24 +25,65 @@ export default function Login({ onLogin }: LoginProps) {
     rememberMe: false,
   })
 
-  const demoAccounts = [
-    { email: "admin@yeardream.com", password: "admin123", role: "admin", name: "박관리자", department: "운영팀" },
-    { email: "coach@yeardream.com", password: "coach123", role: "coach", name: "김코치", department: "프론트엔드팀" },
-    { email: "student@yeardream.com", password: "student123", role: "student", name: "이수강생", seat: "A-01" },
-  ]
-
-  const handleDemoLogin = (account: any) => {
-    setFormData({ ...formData, email: account.email, password: account.password })
-    setTimeout(() => {
-      onLogin(account.role, account)
-      window.location.href = "/"
-    }, 500)
+  // 입력 값 변경 핸들러
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }))
   }
+
+  // 로그인 제출 핸들러 (실제 API 호출로 대체되어야 함)
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    
+    // --- 실제 API 호출 로직을 여기에 구현하세요 ---
+    try {
+      // API 호출 성공 가정 (임시 로직)
+      /*
+      const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify(formData) });
+      const data = await response.json();
+      
+      if (response.ok) {
+          const userRole = data.role.toLowerCase().replace('role_', ''); 
+          onLogin(userRole, data);
+      } else {
+          alert(data.message || "로그인 실패");
+      }
+      */
+      
+      // 임시 실패 처리 (API가 없으므로 임시로 실패 메시지 표시)
+      setTimeout(() => {
+          alert("로그인 API가 연결되지 않았습니다. (데이터 전송됨)");
+          setLoading(false);
+      }, 1000);
+
+
+    } catch (error) {
+      console.error("로그인 중 오류 발생:", error)
+      alert("로그인 서버와 통신할 수 없습니다.")
+      setLoading(false)
+    }
+  }
+
+  // Checkbox 변경 핸들러
+  const handleRememberMe = (checked: boolean) => {
+      setFormData(prev => ({
+          ...prev,
+          rememberMe: checked
+      }))
+  }
+
+  const handleSignUpSuccess = () => {
+    setIsLogin(true); // 로그인 탭으로 전환
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        {/* 왼쪽 브랜딩 */}
+        {/* 왼쪽 브랜딩 (유지) */}
         <div className="hidden lg:block space-y-8">
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
@@ -70,39 +115,106 @@ export default function Login({ onLogin }: LoginProps) {
             </CardHeader>
 
             <CardContent className="space-y-6">
+              
+              {/* 일반 로그인 폼 */}
+              {isLogin ? (
+                <form onSubmit={handleLoginSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">이메일</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="name@example.com"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">비밀번호</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="rememberMe"
+                        checked={formData.rememberMe}
+                        onCheckedChange={handleRememberMe}
+                        disabled={loading}
+                      />
+                      <Label htmlFor="rememberMe" className="text-sm font-normal text-neutral-600">
+                        로그인 정보 저장
+                      </Label>
+                    </div>
+                    <Button variant="link" size="sm" className="text-sm text-system-blue p-0 h-auto font-medium" disabled={loading}>
+                      비밀번호 찾기
+                    </Button>
+                  </div>
+                  
+                  <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : (
+                      "로그인"
+                    )}
+                  </Button>
+                </form>
+              ) : (
+
+                // 회원가입 폼
+                <SignUpForm 
+                    onSignUpSuccess={handleSignUpSuccess} 
+                    loading={loading}
+                    setLoading={setLoading}
+                />
+              )}
+              
+              {/* 구분선 */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-neutral-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-neutral-500">
+                    {isLogin ? "또는 소셜 계정으로 로그인" : "또는 소셜 계정으로 회원가입"}
+                  </span>
+                </div>
+              </div>
+
+
+              {/* 소셜 로그인 버튼 */}
               <div className="space-y-2">
                 <SocialLoginButtons provider="google" loading={loading} />
                 <SocialLoginButtons provider="kakao" loading={loading} />
                 <SocialLoginButtons provider="naver" loading={loading} />
               </div>
-
-              {isLogin && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium text-neutral-700 text-center">빠른 데모 로그인</p>
-                  <div className="grid grid-cols-1 gap-2">
-                    {demoAccounts.map((account, index) => (
-                      <Button key={index} variant="outline" onClick={() => handleDemoLogin(account)} className="justify-between h-12 rounded-xl bg-transparent hover:bg-neutral-50">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            account.role === "admin"
-                              ? "bg-system-purple/10 text-system-purple"
-                              : account.role === "coach"
-                                ? "bg-system-blue/10 text-system-blue"
-                                : "bg-system-green/10 text-system-green"
-                          }`}>
-                            {account.role === "admin" ? <Shield className="h-4 w-4" /> : account.role === "coach" ? <User className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
-                          </div>
-                          <div className="text-left">
-                            <p className="font-medium text-sm">{account.name}</p>
-                            <p className="text-xs text-neutral-500">{account.role}</p>
-                          </div>
-                        </div>
-                        <ArrowRight className="h-4 w-4" />
+              
+              {/* 로그인/회원가입 전환 버튼 */}
+              <div className="text-center pt-4">
+                  <p className="text-sm text-neutral-600">
+                      {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요? "}
+                      <Button 
+                          variant="link" 
+                          size="sm" 
+                          className="text-system-blue p-0 h-auto font-bold"
+                          onClick={() => setIsLogin(!isLogin)}
+                          disabled={loading}
+                      >
+                          {isLogin ? "회원가입" : "로그인"}
                       </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                  </p>
+              </div>
+
             </CardContent>
           </Card>
         </div>

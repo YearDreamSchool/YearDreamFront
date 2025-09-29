@@ -13,17 +13,17 @@ export default function Chatbot() {
     {
       id: 1,
       type: "bot",
-      content: "Hi there! I'm your EarDream assistant. How can I help you today? ✨",
+      content: "어떤점이 궁금하신가요?✨",
       time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
     },
   ])
   const [inputMessage, setInputMessage] = useState("")
 
   const faqQuestions = [
-    "What are the class hours?",
-    "How does attendance work?",
-    "Assignment submission process?",
-    "Career support programs?",
+    "수료 기준이 어떻게 되나요?",
+    "커리큘럼이 어떻게 되나요?",
+    "출석 기준에 대해서 궁금해요.",
+    "오프라인 시설에 대해 궁금해요.",
   ]
 
   const botResponses = {
@@ -98,8 +98,8 @@ export default function Chatbot() {
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-sm font-bold">EarDream AI</CardTitle>
-              <CardDescription className="text-xs text-neutral-300">Always here to help</CardDescription>
+              <CardTitle className="text-sm font-bold">이어드림 AI</CardTitle>
+              <CardDescription className="text-xs text-neutral-300">궁금한 점을 물어보세요</CardDescription>
             </div>
           </div>
           <div className="flex space-x-1">
@@ -159,7 +159,7 @@ export default function Chatbot() {
 
               {messages.length === 1 && (
                 <div className="space-y-4">
-                  <p className="text-xs text-neutral-500 text-center font-medium">Quick Questions</p>
+                  <p className="text-xs text-neutral-500 text-center font-medium">빠른 질문</p>
                   <div className="grid grid-cols-1 gap-2">
                     {faqQuestions.map((question, index) => (
                       <Button

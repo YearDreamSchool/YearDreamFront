@@ -1,6 +1,7 @@
-"use client"
-
-import StudentCard from "components/attendance/AttenandceStudent"
+import { useEffect, useRef } from "react"
+import { Client } from "@stomp/stompjs"
+import SockJS from "sockjs-client"
+import StudentCard from "components/attendance/AttendanceStudent"
 import { Student } from "types/attendance"
 
 interface AttendanceGridProps {
@@ -9,40 +10,91 @@ interface AttendanceGridProps {
 }
 
 export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
+  const stompClient = useRef<Client | null>(null)
+
+  // -----------------------
+  // WebSocket 연결
+  // -----------------------
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      console.error("JWT 토큰 없음")
+      return
+    }
+
+    stompClient.current = new Client({
+      brokerURL: undefined,
+      webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
+      reconnectDelay: 5000,
+      debug: (str) => console.log("[STOMP]", str),
+    })
+
+    stompClient.current.onConnect = () => {
+      stompClient.current?.subscribe("/topic/attendance", (message) => {
+        const updatedData: Student[] = JSON.parse(message.body)
+        setData(updatedData)
+      })
+    }
+
+    stompClient.current.activate()
+    return () => {
+      stompClient.current?.deactivate()
+    }
+  }, [setData])
+
+  // -----------------------
+  // 상태 순환 및 서버 전송
+  // -----------------------
   const toggleAttendance = (index: number) => {
   const newData = [...data]
-  const student = newData[index]
+  const student = { ...newData[index] }
   if (!student) return
 
-  switch (student.status) {
-    case "absent":
-      student.status = "present"
+  const prevStatus = student.status
+
+  switch (prevStatus) {
+    case "ABSENT":
+      student.status = "PRESENT"
       break
-    case "present":
-      student.status = "late"
+    case "PRESENT":
+      student.status = "LATE"
       break
-    case "late":
-      student.status = "absent"
+    case "LATE":
+      student.status = "ABSENT"
       break
-    default:
-      student.status = "absent"
   }
 
+  newData[index] = student
   setData(newData)
+
+  const payload = {
+    seatNum: student.seat,
+    newStatus: student.status.toUpperCase(),
+    updatedAt: new Date().toISOString(),
+  }
+  stompClient.current?.publish({
+    destination: "/app/attendance.update",
+    body: JSON.stringify(payload),
+  })
 }
+
+
 
   const getStatusStyle = (status: Student["status"]) => {
     switch (status) {
-      case "present":
+      case "PRESENT":
         return "bg-green-500 text-white"
-      case "late":
+      case "LATE":
         return "bg-red-500 text-white"
-      case "absent":
+      case "ABSENT":
       default:
         return "bg-gray-400 text-white"
     }
   }
 
+  // -----------------------
+  // 좌석 배열
+  // -----------------------
   const seatRows: number[][][] = [
     [[0, 1, 2], [6, 7, 8]],
     [[3, 4, 5], [9, 10, 11]],
@@ -69,7 +121,7 @@ export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
               if (!student) return <div key={studentIndex} className="w-32 h-32" />
               return (
                 <StudentCard
-                  key={student.seat}
+                  key={`${student.seat}-${studentIndex}`}
                   student={student}
                   onToggle={() => toggleAttendance(studentIndex)}
                   getStatusStyle={getStatusStyle}
@@ -85,7 +137,7 @@ export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
               if (!student) return <div key={studentIndex} className="w-32 h-32" />
               return (
                 <StudentCard
-                  key={student.seat}
+                  key={`${student.seat}-${studentIndex}`}
                   student={student}
                   onToggle={() => toggleAttendance(studentIndex)}
                   getStatusStyle={getStatusStyle}
