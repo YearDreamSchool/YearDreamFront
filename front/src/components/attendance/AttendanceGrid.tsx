@@ -43,43 +43,67 @@ export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
   }, [setData])
 
   // -----------------------
-  // 상태 순환 및 서버 전송
+  // 개별 학생 상태 토글
   // -----------------------
   const toggleAttendance = (index: number) => {
-  const newData = [...data]
-  const student = { ...newData[index] }
-  if (!student) return
+    const newData = [...data]
+    const student = { ...newData[index] }
+    if (!student) return
 
-  const prevStatus = student.status
+    switch (student.status) {
+      case "ABSENT":
+        student.status = "PRESENT"
+        break
+      case "PRESENT":
+        student.status = "LATE"
+        break
+      case "LATE":
+        student.status = "ABSENT"
+        break
+    }
 
-  switch (prevStatus) {
-    case "ABSENT":
-      student.status = "PRESENT"
-      break
-    case "PRESENT":
-      student.status = "LATE"
-      break
-    case "LATE":
-      student.status = "ABSENT"
-      break
+    newData[index] = student
+    setData(newData)
+
+    const payload = {
+      seatNum: student.seat,
+      newStatus: student.status.toUpperCase(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    stompClient.current?.publish({
+      destination: "/app/attendance.update",
+      body: JSON.stringify(payload),
+    })
   }
 
-  newData[index] = student
-  setData(newData)
+  // -----------------------
+  // 전체 상태 업데이트
+  // -----------------------
+  const updateAllAttendance = (newStatus: Student["status"]) => {
+    const now = new Date().toISOString()
 
-  const payload = {
-    seatNum: student.seat,
-    newStatus: student.status.toUpperCase(),
-    updatedAt: new Date().toISOString(),
+    const updatedData = data.map((student) => ({
+      ...student,
+      status: newStatus,
+      updatedAt: now,
+    }))
+    setData(updatedData)
+
+    const payload = updatedData.map((student) => ({
+      seat: student.seat,
+      status: student.status,
+    }))
+
+    stompClient.current?.publish({
+      destination: "/app/attendance.updateAll",
+      body: JSON.stringify(payload),
+    })
   }
-  stompClient.current?.publish({
-    destination: "/app/attendance.update",
-    body: JSON.stringify(payload),
-  })
-}
 
-
-
+  // -----------------------
+  // 상태 스타일
+  // -----------------------
   const getStatusStyle = (status: Student["status"]) => {
     switch (status) {
       case "PRESENT":
@@ -112,41 +136,69 @@ export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
 
   return (
     <div className="space-y-4">
-      {seatRows.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-between max-w-5xl mx-auto px-8">
-          {/* 왼쪽 테이블 */}
-          <div className="flex gap-4 justify-start">
-            {row[0].map((studentIndex) => {
-              const student = data[studentIndex]
-              if (!student) return <div key={studentIndex} className="w-32 h-32" />
-              return (
-                <StudentCard
-                  key={`${student.seat}-${studentIndex}`}
-                  student={student}
-                  onToggle={() => toggleAttendance(studentIndex)}
-                  getStatusStyle={getStatusStyle}
-                />
-              )
-            })}
-          </div>
+      {/* 전체 상태 버튼 */}
+      <div className="flex justify-center gap-4 mb-4">
+        <button
+          onClick={() => updateAllAttendance("PRESENT")}
+          className="px-4 py-2 bg-green-500 text-white rounded"
+        >
+          전체 출석
+        </button>
+        <button
+          onClick={() => updateAllAttendance("LATE")}
+          className="px-4 py-2 bg-red-500 text-white rounded"
+        >
+          전체 자리비움
+        </button>
+        <button
+          onClick={() => updateAllAttendance("ABSENT")}
+          className="px-4 py-2 bg-gray-500 text-white rounded"
+        >
+          전체 결석
+        </button>
+      </div>
 
-          {/* 오른쪽 테이블 */}
-          <div className="flex gap-4 justify-end">
-            {row[1].map((studentIndex) => {
-              const student = data[studentIndex]
-              if (!student) return <div key={studentIndex} className="w-32 h-32" />
-              return (
-                <StudentCard
-                  key={`${student.seat}-${studentIndex}`}
-                  student={student}
-                  onToggle={() => toggleAttendance(studentIndex)}
-                  getStatusStyle={getStatusStyle}
-                />
-              )
-            })}
-          </div>
+      {/* 좌석 테이블 */}
+      {seatRows.map((row, rowIndex) => (
+      <div
+        key={rowIndex}
+        className={`flex justify-between max-w-5xl mx-auto px-8 ${
+          rowIndex === 6 ? "border-t border-gray-300 mt-4 pt-4" : ""
+        }`}
+      >
+        {/* 왼쪽 테이블 */}
+        <div className="flex gap-4 justify-start">
+          {row[0].map((studentIndex) => {
+            const student = data[studentIndex]
+            if (!student) return <div key={studentIndex} className="w-32 h-32" />
+            return (
+              <StudentCard
+                key={`${student.seat}-${studentIndex}`}
+                student={student}
+                onToggle={() => toggleAttendance(studentIndex)}
+                getStatusStyle={getStatusStyle}
+              />
+            )
+          })}
         </div>
-      ))}
+
+        {/* 오른쪽 테이블 */}
+        <div className="flex gap-4 justify-end">
+          {row[1].map((studentIndex) => {
+            const student = data[studentIndex]
+            if (!student) return <div key={studentIndex} className="w-32 h-32" />
+            return (
+              <StudentCard
+                key={`${student.seat}-${studentIndex}`}
+                student={student}
+                onToggle={() => toggleAttendance(studentIndex)}
+                getStatusStyle={getStatusStyle}
+              />
+            )
+          })}
+        </div>
+      </div>
+    ))}
     </div>
   )
 }

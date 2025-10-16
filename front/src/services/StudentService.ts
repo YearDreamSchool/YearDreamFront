@@ -1,4 +1,5 @@
 import axios from "axios"
+import { Student, AttendanceStatus } from "types/attendance"
 
 /**
  * 학생 전체 조회
