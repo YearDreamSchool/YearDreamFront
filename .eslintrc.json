@@ -2,8 +2,7 @@
   "extends": [
     "react-app",
     "react-app/jest",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["@typescript-eslint", "react-hooks", "jsx-a11y"],
   "rules": {
