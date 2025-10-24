@@ -18,7 +18,7 @@ interface CalendarViewProps {
 
 export default function CalendarView({ userRole = "admin" }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [_selectedDate, setSelectedDate] = useState(new Date())
+  const [_selectedDate, setSelectedDate] = useState(new Date()) //eslint-disable-line no-unused-vars
   const [events, setEvents] = useState([
     {
       id: 1,
