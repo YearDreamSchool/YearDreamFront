@@ -106,7 +106,7 @@ export default function Curriculum() {
       {/* 헤더 */}
       <div>
         <h2 className="text-2xl font-bold">커리큘럼</h2>
-        <p className="text-muted-foreground">이어드림스쿨의 체계적인 교육 과정을 확인하세요</p>
+        <p className="text-muted-foreground">이어드림스쿨의 체계적인 교육 과정을 확인하세요 (아직 개발중입니다)</p>
       </div>
 
       {/* 전체 진행 현황 */}

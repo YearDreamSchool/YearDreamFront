@@ -372,7 +372,7 @@ export default function CalendarView({ userRole = "admin" }: CalendarViewProps) 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold">캘린더</h2>
-          <p className="text-muted-foreground">교육 일정과 주요 행사를 확인하세요</p>
+          <p className="text-muted-foreground">교육 일정과 주요 행사를 확인하세요 (아직 개발중입니다)</p>
         </div>
         {(userRole === "admin" || userRole === "coach") && (
           <div className="flex space-x-2">

@@ -132,7 +132,7 @@ export default function Board({ userRole }: BoardProps) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold">공용 게시판</h2>
-          <p className="text-muted-foreground">공지사항과 소통 공간입니다</p>
+          <p className="text-muted-foreground">공지사항과 소통 공간입니다 (아직 개발중입니다)</p>
         </div>
         <Dialog>
           <DialogTrigger asChild>

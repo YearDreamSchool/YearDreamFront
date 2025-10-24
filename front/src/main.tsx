@@ -1,5 +1,6 @@
 "use client"
 
+import { Wrench } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card"
 import { Button } from "components/ui/button"
 import { Badge } from "components/ui/badge"
@@ -94,6 +95,17 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
     { title: "프로젝트 완성", description: "5개 팀 프로젝트 완료", icon: Target },
   ]
 
+  // 개발 중 메시지를 표시하는 공통 컴포넌트
+  const DevelopmentNotice = ({ title }: { title: string }) => (
+    <div className="col-span-full">
+      <div className="bg-neutral-50/70 backdrop-blur-sm border-2 border-dashed border-neutral-300 rounded-2xl p-12 text-center shadow-inner min-h-[200px] flex flex-col items-center justify-center">
+        <Wrench className="h-8 w-8 text-neutral-500 mb-4" />
+        <p className="text-xl font-bold text-neutral-700">{title} 섹션</p>
+        <p className="text-sm text-neutral-500 mt-1">현재 개발 및 데이터 통합 작업이 진행 중입니다. 잠시만 기다려주세요! 😊</p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-8">
       {/* 웰컴 섹션 */}
@@ -106,16 +118,16 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
               <p className="text-neutral-300 text-lg mb-6">함께 성장하는 개발자 교육 플랫폼에서 꿈을 이루어보세요</p>
               <div className="flex items-center space-x-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">58</div>
-                  <div className="text-sm text-neutral-400">수강생</div>
+                  <div className="text-3xl font-bold"></div>
+                  <div className="text-sm text-neutral-400"></div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">4</div>
-                  <div className="text-sm text-neutral-400">진행 과정</div>
+                  <div className="text-3xl font-bold"></div>
+                  <div className="text-sm text-neutral-400"></div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">92%</div>
-                  <div className="text-sm text-neutral-400">출석률</div>
+                  <div className="text-3xl font-bold"></div>
+                  <div className="text-sm text-neutral-400"></div>
                 </div>
               </div>
             </div>
@@ -130,7 +142,9 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
 
       {/* 빠른 통계 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quickStats.map((stat, index) => {
+        {/* 👇 [강제] 개발 중/데이터 없음 메시지 표시 */}
+        <DevelopmentNotice title="빠른 통계" />
+        {/* {quickStats.map((stat, index) => {
           const Icon = stat.icon
           return (
             <Card
@@ -157,13 +171,14 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
               </CardContent>
             </Card>
           )
-        })}
+        })} */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* 최근 활동 */}
         <div className="lg:col-span-2">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
+          <DevelopmentNotice title="최근 활동" />
+          {/* <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-neutral-900">최근 활동</CardTitle>
             </CardHeader>
@@ -186,7 +201,7 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
                 })}
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* 다가오는 일정 */}
@@ -197,7 +212,8 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {upcomingEvents.map((event, index) => (
+                <DevelopmentNotice title="다가오는 일정" />
+                {/* {upcomingEvents.map((event, index) => (
                   <div key={index} className="p-4 border border-neutral-200 rounded-2xl">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold text-sm text-neutral-900">{event.title}</h4>
@@ -221,7 +237,7 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
                       <span>{event.participants}명 참여</span>
                     </div>
                   </div>
-                ))}
+                ))} */}
               </div>
             </CardContent>
           </Card>
@@ -237,7 +253,8 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {achievements.map((achievement, index) => {
+              <DevelopmentNotice title="이번 주 성과" />
+              {/* {achievements.map((achievement, index) => {
                 const Icon = achievement.icon
                 return (
                   <div
@@ -253,7 +270,7 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
                     </div>
                   </div>
                 )
-              })}
+              })} */}
             </div>
           </CardContent>
         </Card>
@@ -309,7 +326,8 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-system-blue/10 to-system-blue/5 rounded-2xl">
+            <DevelopmentNotice title="전체 학습 진행률" />
+            {/* <div className="text-center p-6 bg-gradient-to-br from-system-blue/10 to-system-blue/5 rounded-2xl">
               <div className="w-16 h-16 bg-system-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="h-8 w-8 text-system-blue" />
               </div>
@@ -340,7 +358,7 @@ export default function MainPage({ userRole, currentUser, onNavigate }: MainPage
               <h3 className="font-bold text-system-orange mb-2">취업 준비</h3>
               <div className="text-2xl font-bold text-neutral-900 mb-1">100%</div>
               <p className="text-xs text-neutral-600">30명 완료</p>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
