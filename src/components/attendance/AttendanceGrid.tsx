@@ -9,6 +9,8 @@ interface AttendanceGridProps {
   setData: React.Dispatch<React.SetStateAction<Student[]>>
 }
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+
 export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
   const stompClient = useRef<Client | null>(null)
 
@@ -24,7 +26,7 @@ export default function AttendanceGrid({ data, setData }: AttendanceGridProps) {
 
     stompClient.current = new Client({
       brokerURL: undefined,
-      webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
+      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws?token=${token}`),
       reconnectDelay: 5000,
       debug: (str) => console.log("[STOMP]", str),
     })

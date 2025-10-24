@@ -1,5 +1,7 @@
 import axios from "axios"
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+
 export interface UserResponse {
   name: string
   username: string
@@ -25,7 +27,7 @@ export interface LogoutUser {
  */
 export async function getCurrentUser(token: string): Promise<UserResponse | null> {
   try {
-    const res = await axios.get<UserResponse>(`http://localhost:8080/api/users/logined`, {
+    const res = await axios.get<UserResponse>(`${API_BASE_URL}/api/users/logined`, {
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true,
     })
@@ -43,7 +45,7 @@ export async function getCurrentUser(token: string): Promise<UserResponse | null
  */
 export async function refreshAccessToken(): Promise<string | null> {
   try {
-    const res = await axios.get<{ accessToken: string }>(`http://localhost:8080/api/token/refresh`, {
+    const res = await axios.get<{ accessToken: string }>(`${API_BASE_URL}/api/token/refresh`, {
       withCredentials: true,
     })
     return res.data.accessToken
@@ -65,7 +67,7 @@ export const getUserInfo = async (username: string, token?: string) => {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await axios.get(`http://localhost:8080/api/users/${encodeURIComponent(username)}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/users/${encodeURIComponent(username)}`, {
       headers,
     });
 
@@ -86,7 +88,7 @@ export async function updateUser(
 ): Promise<UserResponse | null> {
   try {
     const res = await axios.patch<UserResponse>(
-      `http://localhost:8080/api/users/${username}`,
+      `${API_BASE_URL}/api/users/${username}`,
       updateData,
       {
         headers: {
@@ -108,7 +110,7 @@ export async function updateUser(
    */
 export const logoutUser = async (accessToken: string) => {
   return axios.post(
-    "http://localhost:8080/api/users/logout",
+    `${API_BASE_URL}/api/users/logout`,
     {},
     {
       headers: {

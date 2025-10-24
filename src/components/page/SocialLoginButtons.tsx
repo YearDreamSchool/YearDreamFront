@@ -1,5 +1,6 @@
 import { Button } from "components/ui/button"
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
 interface SocialLoginButtonProps {
   provider: "google" | "kakao" | "naver";
@@ -38,7 +39,7 @@ export default function SocialLoginButton({ provider, loading }: SocialLoginButt
 
   return (
     <Button
-      onClick={() => (window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`)}
+      onClick={() => (window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`)}
       disabled={loading}
       className={`w-full ${bgColor} ${hoverColor} ${textColor} h-12 rounded-xl`}
     >

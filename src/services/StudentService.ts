@@ -1,12 +1,14 @@
 import axios from "axios"
 import { Student, AttendanceStatus } from "types/attendance"
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+
 /**
  * 학생 전체 조회
  */
 export async function getAllStudents(token: string) {
     try {
-        const res = await axios.get(`http://localhost:8080/api/students`, {
+        const res = await axios.get(`${API_BASE_URL}/api/students`, {
             headers: {Authorization : `Bearer ${token}`}
         })
         return res.data
