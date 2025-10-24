@@ -56,7 +56,7 @@ export default function Login({ onLogin }: LoginProps) {
       
       // 임시 실패 처리 (API가 없으므로 임시로 실패 메시지 표시)
       setTimeout(() => {
-          alert("로그인 API가 연결되지 않았습니다. (데이터 전송됨)");
+          alert("로그인은 개발중이니 소셜로그인으로 진행해주세요.");
           setLoading(false);
       }, 1000);
 
