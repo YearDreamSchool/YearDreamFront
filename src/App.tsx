@@ -1,7 +1,14 @@
-"use client"
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Page from "page"
+import OAuthRedirectHandler from "./components/page/OAuthRedirectHandler"
 
 export default function App() {
-  return <Page />
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Page />} />
+        <Route path="/oauth/redirect" element={<OAuthRedirectHandler />} />
+      </Routes>
+    </Router>
+  )
 }
