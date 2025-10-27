@@ -1,5 +1,4 @@
 import axios from "axios"
-import { Student, AttendanceStatus } from "types/attendance"
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 

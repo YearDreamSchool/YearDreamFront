@@ -8,6 +8,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Page />} />
         <Route path="/oauth/redirect" element={<OAuthRedirectHandler />} />
+        <Route path="/login/oauth2/code/google" element={<OAuthRedirectHandler />} />
       </Routes>
     </Router>
   )
