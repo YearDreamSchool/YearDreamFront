@@ -117,12 +117,11 @@ export async function updateUser(
 export const logoutUser = async (accessToken: string) => {
   return axios.post(
     `${API_BASE_URL}/api/users/logout`,
-    {},
+    {}, 
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      withCredentials: true,
     }
   );
 };
