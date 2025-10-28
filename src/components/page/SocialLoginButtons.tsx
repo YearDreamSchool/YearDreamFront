@@ -38,7 +38,7 @@ export default function SocialLoginButton({ provider, loading }: SocialLoginButt
 
   const handleClick = () => {
     console.log(`${provider} 로그인 시도:`, `https://yeardream.site/oauth2/authorization/${provider}`)
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`
+    window.location.href = `https://yeardream.site/oauth2/authorization/${provider}`
   }
 
   return (
