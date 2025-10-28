@@ -66,20 +66,52 @@ useEffect(() => {
     console.log("fetchUser 시작")
     setIsLoading(true)
     
+    // URL 파라미터에서 토큰 확인
     const params = new URLSearchParams(window.location.search)
     const oauthToken = params.get("token")
-    console.log("OAuth 토큰:", oauthToken)
+    console.log("OAuth 토큰 (URL):", oauthToken)
     
     if (oauthToken) {
       localStorage.setItem("token", oauthToken)
       console.log("토큰 저장됨:", oauthToken)
     }
 
+    // 쿠키에서도 토큰 확인
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+      return null;
+    }
+    
+    const cookieToken = getCookie('accessToken') || getCookie('token')
+    console.log("OAuth 토큰 (쿠키):", cookieToken)
+    
+    if (cookieToken && !localStorage.getItem("token")) {
+      localStorage.setItem("token", cookieToken)
+      console.log("쿠키에서 토큰 저장됨:", cookieToken)
+    }
+
     let token = localStorage.getItem("token")
     console.log("저장된 토큰:", token)
     
     if (!token) {
-      console.log("토큰이 없음 - 로그인 화면으로")
+      console.log("토큰이 없음")
+      
+      // OAuth 리다이렉트 후인지 확인 (URL에 code나 state가 있으면)
+      const hasOAuthParams = params.has('code') || params.has('state') || window.location.pathname.includes('oauth')
+      console.log("OAuth 리다이렉트 감지:", hasOAuthParams, window.location.href)
+      
+      if (hasOAuthParams) {
+        console.log("OAuth 리다이렉트 후 토큰 대기 중...")
+        // 잠시 대기 후 다시 시도
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000)
+        return
+      }
+      
+      console.log("로그인 화면으로")
       setIsAuthenticated(false)
       setCurrentUser(null)
       setIsLoading(false)

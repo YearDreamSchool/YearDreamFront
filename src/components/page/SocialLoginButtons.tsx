@@ -35,15 +35,19 @@ const getButtonInfo = (provider: SocialLoginButtonProps["provider"]) => {
 
 export default function SocialLoginButton({ provider, loading }: SocialLoginButtonProps) {
   const { text, bgColor, hoverColor, textColor } = getButtonInfo(provider);
-  const loadingText = "로그인 중...";
+
+  const handleClick = () => {
+    console.log(`${provider} 로그인 시도:`, `https://yeardream.site/oauth2/authorization/${provider}`)
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`
+  }
 
   return (
     <Button
-      onClick={() => (window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`)}
+      onClick={handleClick}
       disabled={loading}
       className={`w-full ${bgColor} ${hoverColor} ${textColor} h-12 rounded-xl`}
     >
-      {loading ? loadingText : text}
+      {text}
     </Button>
   );
 }
