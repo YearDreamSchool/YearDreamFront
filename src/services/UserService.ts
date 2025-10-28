@@ -27,12 +27,15 @@ export interface LogoutUser {
  */
 export async function getCurrentUser(token: string): Promise<UserResponse | null> {
   try {
+    console.log("getCurrentUser 요청:", `${API_BASE_URL}/api/users/logined`)
     const res = await axios.get<UserResponse>(`${API_BASE_URL}/api/users/logined`, {
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true,
     })
+    console.log("getCurrentUser 응답:", res.data)
     return res.data
   } catch (error: any) {
+    console.error("getCurrentUser 에러:", error.response?.status, error.response?.data, error.message)
     if (error.response?.status === 401) {
       return null
     }
@@ -45,11 +48,14 @@ export async function getCurrentUser(token: string): Promise<UserResponse | null
  */
 export async function refreshAccessToken(): Promise<string | null> {
   try {
+    console.log("refreshAccessToken 요청:", `${API_BASE_URL}/api/token/refresh`)
     const res = await axios.get<{ accessToken: string }>(`${API_BASE_URL}/api/token/refresh`, {
       withCredentials: true,
     })
+    console.log("refreshAccessToken 응답:", res.data)
     return res.data.accessToken
   } catch (error: any) {
+    console.error("refreshAccessToken 에러:", error.response?.status, error.response?.data, error.message)
     return null
   }
 }

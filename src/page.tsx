@@ -63,24 +63,39 @@ export default function Page() {
 // useEffect 내부
 useEffect(() => {
   const fetchUser = async () => {
+    console.log("fetchUser 시작")
     const params = new URLSearchParams(window.location.search)
     const oauthToken = params.get("token")
-    if (oauthToken) localStorage.setItem("token", oauthToken)
+    console.log("OAuth 토큰:", oauthToken)
+    
+    if (oauthToken) {
+      localStorage.setItem("token", oauthToken)
+      console.log("토큰 저장됨:", oauthToken)
+    }
 
     let token = localStorage.getItem("token")
+    console.log("저장된 토큰:", token)
+    
     if (!token) {
+      console.log("토큰이 없음 - 로그인 화면으로")
       setIsAuthenticated(false)
       setCurrentUser(null)
       return
     }
 
     // 1. accessToken으로 기본 사용자 정보 가져오기
+    console.log("사용자 정보 요청 중...")
     let basicUser = await getCurrentUser(token)
+    console.log("기본 사용자 정보:", basicUser)
 
     // 2. 만약 accessToken 만료 시 refresh 시도
     if (!basicUser) {
+      console.log("토큰 만료 - 리프레시 시도")
       const newToken = await refreshAccessToken()
+      console.log("새 토큰:", newToken)
+      
       if (!newToken) {
+        console.log("리프레시 실패 - 로그아웃")
         setIsAuthenticated(false)
         setCurrentUser(null)
         localStorage.removeItem("token")
@@ -90,6 +105,7 @@ useEffect(() => {
       token = newToken
       basicUser = await getCurrentUser(token)
       if (!basicUser) {
+        console.log("새 토큰으로도 사용자 정보 가져오기 실패")
         setIsAuthenticated(false)
         setCurrentUser(null)
         localStorage.removeItem("token")
@@ -99,15 +115,19 @@ useEffect(() => {
 
     // 3. username 기반으로 상세 유저 정보 가져오기
     if (!basicUser.username) {
+      console.log("username이 없음")
       setIsAuthenticated(false)
       setCurrentUser(null)
       localStorage.removeItem("token")
       return
     }
 
+    console.log("상세 사용자 정보 요청 중...", basicUser.username)
     const userData = await getUserInfo(basicUser.username, token)
+    console.log("상세 사용자 정보:", userData)
 
     if (!userData) {
+      console.log("상세 사용자 정보 가져오기 실패")
       setIsAuthenticated(false)
       setCurrentUser(null)
       localStorage.removeItem("token")
@@ -131,15 +151,21 @@ useEffect(() => {
     }
 
     // 5. 로그인 처리
+    console.log("로그인 처리:", roleMapped, userData)
     handleLogin(roleMapped, userData, token)
 
     // 6. URL에서 token 제거
     const url = new URL(window.location.href)
     url.searchParams.delete("token")
     window.history.replaceState({}, "", url.toString())
+    console.log("로그인 완료")
   }
 
-  fetchUser()
+  fetchUser().catch(error => {
+    console.error("fetchUser 에러:", error)
+    setIsAuthenticated(false)
+    setCurrentUser(null)
+  })
 }, [])
 
   if (!isAuthenticated) return <Login onLogin={handleLogin} />
