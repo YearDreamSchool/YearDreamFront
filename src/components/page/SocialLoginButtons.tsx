@@ -37,8 +37,8 @@ export default function SocialLoginButton({ provider, loading }: SocialLoginButt
   const { text, bgColor, hoverColor, textColor } = getButtonInfo(provider);
 
   const handleClick = () => {
-    console.log(`${provider} 로그인 시도:`, `https://yeardream.site/oauth2/authorization/${provider}`)
-    window.location.href = `https://yeardream.site/oauth2/authorization/${provider}`
+    console.log(`${provider} 로그인 시도:`, `https://yeardream.codns.com/oauth2/authorization/${provider}`)
+    window.location.href = `https://yeardream.codns.com/oauth2/authorization/${provider}`
   }
 
   return (
