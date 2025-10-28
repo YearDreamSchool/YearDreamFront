@@ -64,6 +64,8 @@ export default function Page() {
 useEffect(() => {
   const fetchUser = async () => {
     console.log("fetchUser 시작")
+    setIsLoading(true)
+    
     const params = new URLSearchParams(window.location.search)
     const oauthToken = params.get("token")
     console.log("OAuth 토큰:", oauthToken)
@@ -80,6 +82,7 @@ useEffect(() => {
       console.log("토큰이 없음 - 로그인 화면으로")
       setIsAuthenticated(false)
       setCurrentUser(null)
+      setIsLoading(false)
       return
     }
 
@@ -99,6 +102,7 @@ useEffect(() => {
         setIsAuthenticated(false)
         setCurrentUser(null)
         localStorage.removeItem("token")
+        setIsLoading(false)
         return
       }
       localStorage.setItem("token", newToken)
@@ -109,6 +113,7 @@ useEffect(() => {
         setIsAuthenticated(false)
         setCurrentUser(null)
         localStorage.removeItem("token")
+        setIsLoading(false)
         return
       }
     }
@@ -119,6 +124,7 @@ useEffect(() => {
       setIsAuthenticated(false)
       setCurrentUser(null)
       localStorage.removeItem("token")
+      setIsLoading(false)
       return
     }
 
@@ -131,6 +137,7 @@ useEffect(() => {
       setIsAuthenticated(false)
       setCurrentUser(null)
       localStorage.removeItem("token")
+      setIsLoading(false)
       return
     }
 
@@ -159,14 +166,30 @@ useEffect(() => {
     url.searchParams.delete("token")
     window.history.replaceState({}, "", url.toString())
     console.log("로그인 완료")
+    setIsLoading(false)
   }
 
   fetchUser().catch(error => {
     console.error("fetchUser 에러:", error)
     setIsAuthenticated(false)
     setCurrentUser(null)
+    setIsLoading(false)
   })
 }, [])
+
+  // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(true)
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900 mx-auto mb-4"></div>
+          <p className="text-neutral-600">로그인 확인 중...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!isAuthenticated) return <Login onLogin={handleLogin} />
 

@@ -194,9 +194,9 @@ export default function Login({ onLogin }: LoginProps) {
 
               {/* 소셜 로그인 버튼 */}
               <div className="space-y-2">
-                <SocialLoginButtons provider="google" loading={loading} />
-                <SocialLoginButtons provider="kakao" loading={loading} />
-                <SocialLoginButtons provider="naver" loading={loading} />
+                <SocialLoginButtons provider="google" loading={false} />
+                <SocialLoginButtons provider="kakao" loading={false} />
+                <SocialLoginButtons provider="naver" loading={false} />
               </div>
               
               {/* 로그인/회원가입 전환 버튼 */}
