@@ -124,6 +124,8 @@ export const logoutUser = async (accessToken: string) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      withCredentials: true,
     }
   );
 };
+
