@@ -48,15 +48,17 @@ export async function getCurrentUser(token: string): Promise<UserResponse | null
  */
 export async function refreshAccessToken(): Promise<string | null> {
   try {
-    console.log("refreshAccessToken 요청:", `${API_BASE_URL}/api/token/refresh`)
-    const res = await axios.get<{ accessToken: string }>(`${API_BASE_URL}/api/token/refresh`, {
-      withCredentials: true,
-    })
-    console.log("refreshAccessToken 응답:", res.data)
-    return res.data.accessToken
+    console.log("refreshAccessToken 요청:", `${API_BASE_URL}/api/token/refresh`);
+    const res = await axios.post<{ accessToken: string }>(
+      `${API_BASE_URL}/api/token/refresh`,
+      {},
+      { withCredentials: true }
+    );
+    console.log("refreshAccessToken 응답:", res.data);
+    return res.data.accessToken;
   } catch (error: any) {
-    console.error("refreshAccessToken 에러:", error.response?.status, error.response?.data, error.message)
-    return null
+    console.error("refreshAccessToken 에러:", error.response?.status, error.response?.data, error.message);
+    return null;
   }
 }
 
