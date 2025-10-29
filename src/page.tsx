@@ -227,10 +227,9 @@ useEffect(() => {
 
   const menuItems = [
     { id: "main", label: "메인페이지", icon: BarChart3, roles: ["coach", "admin", "user"] },
-    // { id: "dashboard", label: "대시보드", icon: BarChart3, roles: ["coach", "admin"] },
-    { id: "attendance", label: "좌석 배치도", icon: Users, roles: ["coach"] },
-    { id: "board", label: "게시판", icon: MessageCircle, roles: ["coach", "admin", "user"] },
-    { id: "curriculum", label: "커리큘럼", icon: BookOpen, roles: ["coach", "admin", "user"] },
+    { id: "attendance", label: "좌석 배치도", icon: Users, roles: ["coach", "admin"] },
+    // { id: "board", label: "게시판", icon: MessageCircle, roles: ["coach", "admin", "user"] },
+    // { id: "curriculum", label: "커리큘럼", icon: BookOpen, roles: ["coach", "admin", "user"] },
     { id: "calendar", label: "스케쥴", icon: Calendar, roles: ["coach", "admin", "user"] },
   ]
 
